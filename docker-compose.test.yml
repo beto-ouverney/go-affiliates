@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: golang:latest
+    user: root
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    container_name: affiliates_backend_test
+    tty: true
+    stdin_open: true
+    command: bash
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    networks:
+      - test
+  db:
+    container_name: affiliates_db_test
+    image: postgres
+    platform: linux/x86_64
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    volumes:
+      - ./backend/config/migrations/000001_producers.up.sql:/docker-entrypoint-initdb.d/000001_producers.up.sql
+      - ./backend/config/migrations/000002_affiliates.up.sql:/docker-entrypoint-initdb.d/000002_affiliates.up.sql
+      - ./backend/config/migrations/000003_products.up.sql:/docker-entrypoint-initdb.d/000003_products.up.sql
+      - ./backend/config/migrations/000004_sales.up.sql:/docker-entrypoint-initdb.d/000004_sales.up.sql
+    environment:
+        POSTGRES_USER: root
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: affiliates_db_test
+    networks:
+      - test
+networks:
+  test:
+    driver: bridge
