@@ -7,6 +7,6 @@ type Sale struct {
 	AffiliateId int64  `db:"affiliate_id"`
 	ProductId   int64  `db:"product_id"`
 	Value       int    `db:"value"`
-	Commission  int    `db:"commision"`
+	Commission  int    `db:"commission"`
 	Date        string `db:"date"`
 }
