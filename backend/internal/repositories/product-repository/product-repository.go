@@ -10,7 +10,7 @@ import (
 
 // IProductRepository presents the interface for the product repository
 type IProductRepository interface {
-	AddProduct(ctx context.Context, name string) (*int64, *customerror.CustomError)
+	AddProduct(ctx context.Context, name string, producerId int64) (*int64, *customerror.CustomError)
 	GetProductByName(ctx context.Context, name string) (*entities.Product, *customerror.CustomError)
 }
 
