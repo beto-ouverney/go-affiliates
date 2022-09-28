@@ -11,7 +11,10 @@ func (r *productRepository) GetProductByName(ctx context.Context, name string) (
 	var product entities.Product
 	err := r.sqlx.GetContext(ctx, &product, "SELECT id, name FROM products WHERE name = $1", name)
 	if err != nil {
-		return nil, customerror.NewError(customerror.EINVALID, "Error", "producer_repository.GetProductByName", err)
+		if err.Error() == "sql: no rows in result set" {
+			return nil, customerror.NewError(customerror.ENOTFOUND, "Not found", "_repository.GetProductByName", err)
+		}
+		return nil, customerror.NewError(customerror.EINVALID, "Error", "product_repository.GetProductByName", err)
 	}
 	return &product, nil
 }
