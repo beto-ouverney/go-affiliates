@@ -18,6 +18,7 @@ type producerRepository struct {
 	sqlx *sqlx.DB
 }
 
+// New creates a new producer repository
 func New() IProducerRepository {
 	return &producerRepository{
 		db.ConnectDB(),
