@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS producers(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(20) NOT NULL
+);
