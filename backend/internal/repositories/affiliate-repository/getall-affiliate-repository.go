@@ -16,5 +16,6 @@ func (r *affiliateRepository) GetAll(ctx context.Context) (*[]entities.Affiliate
 		}
 		return nil, customerror.NewError(customerror.EINVALID, "Error", "affiliate_repository.GetAll", err)
 	}
+
 	return &af, nil
 }

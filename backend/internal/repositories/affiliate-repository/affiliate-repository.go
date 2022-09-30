@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// IAffiliateRepository presents the interface for the affiliate repository
+// IAffiliateRepository presents the affiliate repository interface
 type IAffiliateRepository interface {
 	Add(ctx context.Context, af []entities.Affiliate) *customerror.CustomError
 	GetAll(ctx context.Context) (*[]entities.Affiliate, *customerror.CustomError)

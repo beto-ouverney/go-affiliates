@@ -26,7 +26,7 @@ func Test_affiliateRepository_GetByName(t *testing.T) {
 		},
 		{
 			ID:         2,
-			Name:       "Beto Paz",
+			Name:       "Beto Ouverney Paz",
 			ProducerId: 2,
 		},
 	}
