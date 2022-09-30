@@ -126,3 +126,12 @@ func TestParseLineNameValue(t *testing.T) {
 	assertions.Equal(n, "JOSE CARLOS")
 	assertions.Equal(v, 12750)
 }
+
+func BenchmarkParseLineNameValue(b *testing.B) {
+
+	line := "12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS"
+
+	for i := 0; i < b.N; i++ {
+		ParseLineNameValue(line)
+	}
+}
