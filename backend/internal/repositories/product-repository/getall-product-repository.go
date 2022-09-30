@@ -16,5 +16,6 @@ func (r *productRepository) GetAll(ctx context.Context) (*[]entities.Product, *c
 		}
 		return nil, customerror.NewError(customerror.EINVALID, "Error", "product_repository.GetAll", err)
 	}
+
 	return &p, nil
 }

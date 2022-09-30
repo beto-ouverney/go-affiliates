@@ -13,5 +13,6 @@ func (r *productRepository) Add(ctx context.Context, p []entities.Product) *cust
 	if err != nil {
 		return customerror.NewError(customerror.EINVALID, "Error", "producer_repository.AddProduct", err)
 	}
+
 	return nil
 }
