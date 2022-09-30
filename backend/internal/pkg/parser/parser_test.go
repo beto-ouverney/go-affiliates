@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseLineType(t *testing.T) {
-	t.Log("Should be able parse the line type")
+	t.Log("Should be able parse the line type.")
 	dataEntry, err := ParseLine("12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS", 1)
 	if err != nil {
 		panic(err)
@@ -17,7 +17,7 @@ func TestParseLineType(t *testing.T) {
 }
 
 func TestParseLineDate(t *testing.T) {
-	t.Log("Should be able parse the line date")
+	t.Log("Should be able parse the line date.")
 	dataEntry, err := ParseLine("12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS", 1)
 	if err != nil {
 		panic(err)
@@ -118,7 +118,7 @@ func TestParseLine(t *testing.T) {
 
 func TestParseLineNameValue(t *testing.T) {
 	assertions := assert.New(t)
-	t.Log("Should be able parse the line and return name and value")
+	t.Log("Should be able parse the line and return name and value.")
 
 	line := "12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS"
 
