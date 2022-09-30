@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"regexp"
 	"strconv"
 	"strings"
@@ -13,6 +12,20 @@ const pattern = "(?P<type>[1-4])(?P<date>(19[0-9][0-9]|20[0-9][0-9])-(1[0-2]|0[1
 
 // Regex expression to verify if date is in correct format
 const datePattern = "(19[0-9][0-9]|20[0-9][0-9])-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(T)(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9]([\\+-])([01]\\d|2[0-3]):?([0-5]\\d))"
+
+// DataEntry presents a data line in the data file
+// ID presents the line in the file
+type DataEntry struct {
+	ID         string
+	Type       int
+	Date       string
+	Product    string
+	ProductId  int64
+	Value      int
+	Commission int
+	Seller     string
+	ProducerId int64
+}
 
 // getMatchedValueByIdentifier returns the value of the matched expression by identifier
 func getMatchedValueByIdentifier(identifier string, matches []string, expNames []string) string {
@@ -49,7 +62,7 @@ func verifyErrorType(matches []string, expNames []string) string {
 }
 
 // ParseLine parser a string line and return a DataEntry struct
-func ParseLine(line string, lineNumber int) (entities.DataEntry, error) {
+func ParseLine(line string, lineNumber int) (DataEntry, error) {
 	errorLine := "Line: "
 	errorLine += strconv.Itoa(lineNumber)
 
@@ -60,7 +73,7 @@ func ParseLine(line string, lineNumber int) (entities.DataEntry, error) {
 	lineOk := re.MatchString(line)
 	if !lineOk {
 		errorLine += verifyErrorType(matches, expNames)
-		return entities.DataEntry{}, errors.New(errorLine)
+		return DataEntry{}, errors.New(errorLine)
 	}
 
 	typeString := getMatchedValueByIdentifier("type", matches, expNames)
@@ -69,29 +82,30 @@ func ParseLine(line string, lineNumber int) (entities.DataEntry, error) {
 	product := strings.TrimSpace(getMatchedValueByIdentifier("product", matches, expNames))
 	if product == "" {
 		errorLine += " Product is in incorrect format."
-		return entities.DataEntry{}, errors.New(errorLine)
+		return DataEntry{}, errors.New(errorLine)
 	}
 	if len(product) > 30 {
 		errorLine += " Product is too long, must be less than 31 characters."
-		return entities.DataEntry{}, errors.New(errorLine)
+		return DataEntry{}, errors.New(errorLine)
 	}
 	valueString := getMatchedValueByIdentifier("value", matches, expNames)
 	value, err := strconv.Atoi(valueString)
 	if err != nil {
 		errorLine += " Value is in incorrect format, must be a int number."
-		return entities.DataEntry{}, errors.New(errorLine)
+		return DataEntry{}, errors.New(errorLine)
 	}
 	seller := strings.TrimSpace(getMatchedValueByIdentifier("seller", matches, expNames))
 	if seller == "" {
 		errorLine += " Seller is in incorrect format."
-		return entities.DataEntry{}, errors.New(errorLine)
+		return DataEntry{}, errors.New(errorLine)
 	}
 	if len(seller) > 20 {
 		errorLine += " Seller is too long, must be less than 21 characters."
-		return entities.DataEntry{}, errors.New(errorLine)
+		return DataEntry{}, errors.New(errorLine)
 	}
 
-	return entities.DataEntry{
+	return DataEntry{
+		ID:      line,
 		Type:    typeParam,
 		Date:    date,
 		Product: product,
@@ -99,4 +113,22 @@ func ParseLine(line string, lineNumber int) (entities.DataEntry, error) {
 		Seller:  seller,
 	}, nil
 
+}
+
+// ParseLineNameValue parser a string line and return name and value
+func ParseLineNameValue(line string) (n string, v int) {
+
+	re := regexp.MustCompile(pattern)
+	matches := re.FindStringSubmatch(line)
+	expNames := re.SubexpNames()
+
+	n = getMatchedValueByIdentifier("seller", matches, expNames)
+	vStr := getMatchedValueByIdentifier("value", matches, expNames)
+
+	v, _ = strconv.Atoi(vStr)
+
+	if n == "" {
+		return "", v
+	}
+	return
 }

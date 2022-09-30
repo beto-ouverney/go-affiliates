@@ -3,14 +3,15 @@ package product_repository
 import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
+	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 )
 
-// AddProduct adds a new product in database and return the id
-func (r *productRepository) AddProduct(ctx context.Context, name string, producertId int64) (*int64, *customerror.CustomError) {
-	var id int64
-	err := r.sqlx.GetContext(ctx, &id, "INSERT INTO products(name, producer_id) VALUES($1,$2) RETURNING id", name, producertId)
+// Add adds a list of products in database
+func (r *productRepository) Add(ctx context.Context, p []entities.Product) *customerror.CustomError {
+	query := "INSERT INTO products(name, producer_id) VALUES(:name, :producer_id) ON CONFLICT (name, producer_id) DO NOTHING"
+	_, err := r.sqlx.NamedQueryContext(ctx, query, p)
 	if err != nil {
-		return nil, customerror.NewError(customerror.EINVALID, "Error", "producer_repository.AddProduct", err)
+		return customerror.NewError(customerror.EINVALID, "Error", "producer_repository.AddProduct", err)
 	}
-	return &id, nil
+	return nil
 }

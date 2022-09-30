@@ -10,8 +10,8 @@ import (
 
 // IAffiliateRepository presents the interface for the affiliate repository
 type IAffiliateRepository interface {
-	Add(ctx context.Context, name string, producer_id int64) (*int64, *customerror.CustomError)
-	GetByName(ctx context.Context, name string) (*entities.Affiliate, *customerror.CustomError)
+	Add(ctx context.Context, af []entities.Affiliate) *customerror.CustomError
+	GetAll(ctx context.Context) (*[]entities.Affiliate, *customerror.CustomError)
 }
 
 type affiliateRepository struct {

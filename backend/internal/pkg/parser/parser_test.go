@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -102,7 +101,8 @@ func TestParseLine(t *testing.T) {
 
 	line := "12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS"
 
-	dataEntry := entities.DataEntry{
+	dataEntry := DataEntry{
+		ID:      "12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS",
 		Type:    1,
 		Date:    "2022-01-15T19:20:30-03:00",
 		Product: "CURSO DE BEM-ESTAR",
@@ -114,4 +114,15 @@ func TestParseLine(t *testing.T) {
 
 	assertions.Nil(err, "Should not return error")
 	assertions.Equal(dataEntry, parsedDataEntry, "Should be equal")
+}
+
+func TestParseLineNameValue(t *testing.T) {
+	assertions := assert.New(t)
+	t.Log("Should be able parse the line and return name and value")
+
+	line := "12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS"
+
+	n, v := ParseLineNameValue(line)
+	assertions.Equal(n, "JOSE CARLOS")
+	assertions.Equal(v, 12750)
 }

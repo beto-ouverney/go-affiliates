@@ -41,8 +41,10 @@ services:
       - ./backend/config/migrations/000001_producers.up.sql:/docker-entrypoint-initdb.d/000001_producers.up.sql
       - ./backend/config/migrations/000002_affiliates.up.sql:/docker-entrypoint-initdb.d/000002_affiliates.up.sql
       - ./backend/config/migrations/000003_products.up.sql:/docker-entrypoint-initdb.d/000003_products.up.sql
-      - ./backend/config/migrations/000004_sales.up.sql:/docker-entrypoint-initdb.d/000004_sales.up.sql
+      - ./backend/config/migrations/000004_sales_producers.up.sql:/docker-entrypoint-initdb.d/000004_sales_producers.up.sql
+      - ./backend/config/migrations/000005_sales_affiliates.up.sql:/docker-entrypoint-initdb.d/000005_sales_affiliates.up.sql
     environment:
+        TZ: GMT+3
         POSTGRES_USER: root
         POSTGRES_PASSWORD: password
         POSTGRES_DB: affiliates_db_test

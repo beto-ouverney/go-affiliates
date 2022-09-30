@@ -1,4 +1,4 @@
-package sale_repository
+package sale_producers_repository
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 // ISaleRepository presents the interface for the sales repository
 type ISaleRepository interface {
-	Add(ctx context.Context, sale []entities.Sale) *customerror.CustomError
+	Add(ctx context.Context, s []entities.Sale) *customerror.CustomError
 }
 
 type saleRepository struct {

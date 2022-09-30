@@ -18,47 +18,55 @@ func Test_productRepository_GetProductByName(t *testing.T) {
 		name string
 	}
 
-	mockProduct := entities.Product{
-		ID:   1,
-		Name: "Product 1",
+	mockProducts := []entities.Product{
+		{
+			ID:         1,
+			Name:       "Hubla",
+			ProducerId: 2,
+		},
+		{
+			ID:         1,
+			Name:       "Product 1",
+			ProducerId: 3,
+		},
 	}
 	tests := []struct {
 		describe string
 		args     args
-		want     *entities.Product
+		want     *[]entities.Product
 		want1    *customerror.CustomError
 		msg      string
 		msg1     string
 	}{
 		{
-			describe: "Should be able to get a product by name",
+			describe: "Should be able to get a products list",
 			args: args{
 				name: "Product 1",
 			},
-			want:  &mockProduct,
+			want:  &mockProducts,
 			want1: nil,
-			msg:   "The product should be Product 1",
-			msg1:  "The error should be nil",
+			msg:   "The list must be equal",
+			msg1:  "The error must be nil",
 		},
 		{
-			describe: "Should be able return a nil product and a custom error if product don`t exist in database",
+			describe: "Should be able return a nil products list and a custom error if product don`t exist in database",
 			args: args{
 				name: "Product 2",
 			},
 			want: nil,
 			want1: customerror.NewError(customerror.ENOTFOUND, "Not found", "_repository.GetProductByName",
 				errors.New("sql: no rows in result set")),
-			msg:  "The product should be nil",
-			msg1: "The error should be a custom error",
+			msg:  "The list must be nil",
+			msg1: "The error must be a custom error",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
 			ctx := context.Background()
 			m := new(mocks_product_repository.IProductRepository)
-			m.On("GetProductByName", mock.AnythingOfType("*context.emptyCtx"), tt.args.name).Return(tt.want, tt.want1)
+			m.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(tt.want, tt.want1)
 
-			got, got1 := m.GetProductByName(ctx, tt.args.name)
+			got, got1 := m.GetAll(ctx)
 			assertions.Equal(tt.want, got, tt.msg)
 			assertions.Equal(tt.want1, got1, tt.msg1)
 		})

@@ -10,8 +10,8 @@ import (
 
 // IProducerRepository presents the interface for the producer repository
 type IProducerRepository interface {
-	Add(ctx context.Context, name string) (*int64, *customerror.CustomError)
-	GetByName(ctx context.Context, name string) (*entities.Producer, *customerror.CustomError)
+	Add(ctx context.Context, p []entities.Producer) *customerror.CustomError
+	GetAll(ctx context.Context) (*[]entities.Producer, *customerror.CustomError)
 }
 
 type producerRepository struct {

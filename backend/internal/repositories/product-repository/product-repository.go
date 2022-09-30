@@ -10,8 +10,8 @@ import (
 
 // IProductRepository presents the interface for the product repository
 type IProductRepository interface {
-	AddProduct(ctx context.Context, name string, producerId int64) (*int64, *customerror.CustomError)
-	GetProductByName(ctx context.Context, name string) (*entities.Product, *customerror.CustomError)
+	Add(ctx context.Context, p []entities.Product) *customerror.CustomError
+	GetAll(ctx context.Context) (*[]entities.Product, *customerror.CustomError)
 }
 
 type productRepository struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
-	mocks_sale_repository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/sale-repository/mocks"
+	mocks_sale_repository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/sale-producers-repository/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"

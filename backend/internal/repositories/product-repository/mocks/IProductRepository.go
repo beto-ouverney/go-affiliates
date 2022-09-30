@@ -16,47 +16,38 @@ type IProductRepository struct {
 	mock.Mock
 }
 
-// AddProduct provides a mock function with given fields: ctx, name, producerId
-func (_m *IProductRepository) AddProduct(ctx context.Context, name string, producerId int64) (*int64, *customerror.CustomError) {
-	ret := _m.Called(ctx, name, producerId)
+// Add provides a mock function with given fields: ctx, p
+func (_m *IProductRepository) Add(ctx context.Context, p []entities.Product) *customerror.CustomError {
+	ret := _m.Called(ctx, p)
 
-	var r0 *int64
-	if rf, ok := ret.Get(0).(func(context.Context, string, int64) *int64); ok {
-		r0 = rf(ctx, name, producerId)
+	var r0 *customerror.CustomError
+	if rf, ok := ret.Get(0).(func(context.Context, []entities.Product) *customerror.CustomError); ok {
+		r0 = rf(ctx, p)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*int64)
+			r0 = ret.Get(0).(*customerror.CustomError)
 		}
 	}
 
-	var r1 *customerror.CustomError
-	if rf, ok := ret.Get(1).(func(context.Context, string, int64) *customerror.CustomError); ok {
-		r1 = rf(ctx, name, producerId)
-	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*customerror.CustomError)
-		}
-	}
-
-	return r0, r1
+	return r0
 }
 
-// GetProductByName provides a mock function with given fields: ctx, name
-func (_m *IProductRepository) GetProductByName(ctx context.Context, name string) (*entities.Product, *customerror.CustomError) {
-	ret := _m.Called(ctx, name)
+// GetAll provides a mock function with given fields: ctx
+func (_m *IProductRepository) GetAll(ctx context.Context) (*[]entities.Product, *customerror.CustomError) {
+	ret := _m.Called(ctx)
 
-	var r0 *entities.Product
-	if rf, ok := ret.Get(0).(func(context.Context, string) *entities.Product); ok {
-		r0 = rf(ctx, name)
+	var r0 *[]entities.Product
+	if rf, ok := ret.Get(0).(func(context.Context) *[]entities.Product); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entities.Product)
+			r0 = ret.Get(0).(*[]entities.Product)
 		}
 	}
 
 	var r1 *customerror.CustomError
-	if rf, ok := ret.Get(1).(func(context.Context, string) *customerror.CustomError); ok {
-		r1 = rf(ctx, name)
+	if rf, ok := ret.Get(1).(func(context.Context) *customerror.CustomError); ok {
+		r1 = rf(ctx)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*customerror.CustomError)
