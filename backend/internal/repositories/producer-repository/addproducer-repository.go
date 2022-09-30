@@ -6,7 +6,7 @@ import (
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 )
 
-// Add a content oroducers list in database
+// Add add content oroducers list in database
 func (r *producerRepository) Add(ctx context.Context, p []entities.Producer) *customerror.CustomError {
 
 	query := "INSERT INTO producers(name) VALUES(:name) ON CONFLICT (name) DO NOTHING"

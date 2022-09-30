@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// IProductRepository presents the interface for the product repository
+// IProductRepository presents product repository interface
 type IProductRepository interface {
 	Add(ctx context.Context, p []entities.Product) *customerror.CustomError
 	GetAll(ctx context.Context) (*[]entities.Product, *customerror.CustomError)

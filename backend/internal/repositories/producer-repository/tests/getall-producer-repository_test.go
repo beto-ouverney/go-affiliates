@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
-	mocks_producer_repository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/producer-repository/mocks"
+	mocksproducerrepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/producer-repository/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -50,7 +50,7 @@ func Test_producerRepository_GetByName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
 			ctx := context.Background()
-			m := new(mocks_producer_repository.IProducerRepository)
+			m := new(mocksproducerrepository.IProducerRepository)
 			m.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(tt.want, tt.want1)
 
 			got, got1 := m.GetAll(ctx)

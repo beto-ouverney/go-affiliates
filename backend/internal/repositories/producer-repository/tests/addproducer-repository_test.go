@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
-	mocks_producer_repository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/producer-repository/mocks"
+	mocksproducerrepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/producer-repository/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -42,7 +42,7 @@ func Test_producerRepository_Add(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
 			ctx := context.Background()
-			m := new(mocks_producer_repository.IProducerRepository)
+			m := new(mocksproducerrepository.IProducerRepository)
 			m.On("Add", mock.AnythingOfType("*context.emptyCtx"), tt.args.data).Return(tt.want)
 
 			got := m.Add(ctx, tt.args.data)

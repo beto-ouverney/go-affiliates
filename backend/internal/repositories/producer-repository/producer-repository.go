@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// IProducerRepository presents the interface for the producer repository
+// IProducerRepository presents producer repository interface
 type IProducerRepository interface {
 	Add(ctx context.Context, p []entities.Producer) *customerror.CustomError
 	GetAll(ctx context.Context) (*[]entities.Producer, *customerror.CustomError)
