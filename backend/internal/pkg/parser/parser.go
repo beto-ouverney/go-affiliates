@@ -123,6 +123,7 @@ func ParseLineNameValue(line string) (n string, v int) {
 	expNames := re.SubexpNames()
 
 	n = getMatchedValueByIdentifier("seller", matches, expNames)
+
 	vStr := getMatchedValueByIdentifier("value", matches, expNames)
 
 	v, _ = strconv.Atoi(vStr)
