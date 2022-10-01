@@ -22,7 +22,7 @@ func Test_saleController_Add(t *testing.T) {
 		want1    *customerror.CustomError
 	}{
 		{
-			describe: "Should be able add sales in database withou error",
+			describe: "Should be able add sales in database without error",
 			args: args{
 				nameFile: "test.txt",
 			},
