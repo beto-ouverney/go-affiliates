@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -38,41 +39,18 @@ func getMatchedValueByIdentifier(identifier string, matches []string, expNames [
 	return "Incorrect format."
 }
 
-// verifyErrorType verify if error is in a type or in date
-func verifyErrorType(matches []string, expNames []string) string {
-	for i, name := range expNames {
-		if name == "type" {
-			typeParam, err := strconv.Atoi(matches[i])
-			if err != nil {
-				return " Error in the type, must be a int number"
-			}
-			if typeParam < 1 || typeParam > 4 {
-				return " Type, must be a number between 1 and 4"
-			}
-		} else if name == " date" {
-			re := regexp.MustCompile(datePattern)
-			dateOk := re.MatchString(matches[i])
-			if !dateOk {
-				return " Date, must be in format YYYY-MM-DDThh:mm:ss±hh:mm"
-			}
-		}
-
-	}
-	return ""
-}
-
 // ParseLine parser a string line and return a DataEntry struct
 func ParseLine(line string, lineNumber int) (DataEntry, error) {
-	errorLine := "Line: "
-	errorLine += strconv.Itoa(lineNumber)
+	errorLine := fmt.Sprintf("Line: %d", lineNumber)
 
 	re := regexp.MustCompile(pattern)
+
 	matches := re.FindStringSubmatch(line)
 	expNames := re.SubexpNames()
 
 	lineOk := re.MatchString(line)
 	if !lineOk {
-		errorLine += verifyErrorType(matches, expNames)
+		errorLine += " Incorrect format."
 		return DataEntry{}, errors.New(errorLine)
 	}
 

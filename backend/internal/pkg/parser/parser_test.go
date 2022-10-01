@@ -81,20 +81,6 @@ func TestGetMatchedValueByIdentifier(t *testing.T) {
 
 }
 
-func TestVerifyErrorType(t *testing.T) {
-	t.Log("Should be able verify the error type")
-	assertions := assert.New(t)
-
-	matches := []string{"A", "202-01-15T19:20:30-03:0", "TEST 3", "0000012750", "JOSE CARLOS"}
-	expNames := []string{"type", "date", "product", "value", "seller"}
-
-	err := verifyErrorType(matches, expNames)
-	assertions.Equal(err, " Error in the type, must be a int number", "Should be return error")
-
-	err = verifyErrorType(matches, expNames)
-	assertions.NotNil(err, " Date, must be in format YYYY-MM-DDThh:mm:ss±hh:mm", "Should return error")
-}
-
 func TestParseLine(t *testing.T) {
 	assertions := assert.New(t)
 	t.Log("Should be able parse the line without error")
