@@ -8,7 +8,7 @@ import (
 
 // ISaleController presents the interface for the sale controller
 type ISaleController interface {
-	Add(ctx context.Context, nameFile string) ([]byte, *customerror.CustomError)
+	Add(ctx context.Context, nameFile string) (*string, *customerror.CustomError)
 }
 
 type saleController struct {
