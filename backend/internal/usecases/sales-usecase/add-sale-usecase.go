@@ -169,10 +169,7 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 	var dataEntryProducers []parser.DataEntry
 	var cpAll []entities.Producer
 
-	path := "../tmp/"
-	path += nameFile
-
-	file, err := os.Open(path)
+	file, err := os.Open(nameFile)
 	if err != nil {
 		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", err)
 	}
