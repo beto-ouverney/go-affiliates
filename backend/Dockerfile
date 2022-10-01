@@ -14,4 +14,4 @@ RUN go mod download
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8088
