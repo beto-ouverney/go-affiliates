@@ -93,21 +93,20 @@ func ParseLine(line string, lineNumber int) (DataEntry, error) {
 
 }
 
-// ParseLineNameValue parser a string line and return name and value
-func ParseLineNameValue(line string) (n string, v int) {
+// ParseLineNameValue parser a string line and return name product and name producer and value
+func ParseLineNameValue(line string) (nS, nP string, v int) {
 
 	re := regexp.MustCompile(pattern)
 	matches := re.FindStringSubmatch(line)
 	expNames := re.SubexpNames()
 
-	n = getMatchedValueByIdentifier("seller", matches, expNames)
+	nS = strings.TrimSpace(getMatchedValueByIdentifier("seller", matches, expNames))
+
+	nP = strings.TrimSpace(getMatchedValueByIdentifier("product", matches, expNames))
 
 	vStr := getMatchedValueByIdentifier("value", matches, expNames)
 
 	v, _ = strconv.Atoi(vStr)
 
-	if n == "" {
-		return "", v
-	}
 	return
 }

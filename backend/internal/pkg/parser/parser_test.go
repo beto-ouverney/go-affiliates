@@ -104,12 +104,13 @@ func TestParseLine(t *testing.T) {
 
 func TestParseLineNameValue(t *testing.T) {
 	assertions := assert.New(t)
-	t.Log("Should be able parse the line and return name and value.")
+	t.Log("Should be able parse the line and return seller name and product name and value.")
 
 	line := "12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS"
 
-	n, v := ParseLineNameValue(line)
-	assertions.Equal(n, "JOSE CARLOS")
+	nS, nP, v := ParseLineNameValue(line)
+	assertions.Equal(nS, "JOSE CARLOS")
+	assertions.Equal(nP, "CURSO DE BEM-ESTAR")
 	assertions.Equal(v, 12750)
 }
 
