@@ -13,6 +13,7 @@ func (r *affiliateRepository) Add(ctx context.Context, af []entities.Affiliate) 
 	if err != nil {
 		return customerror.NewError(customerror.EINVALID, "Error", "affiliate_repository.Add", err)
 	}
+
 	return nil
 
 }
