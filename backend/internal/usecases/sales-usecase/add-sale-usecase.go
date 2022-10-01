@@ -182,6 +182,11 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 	for scanner.Scan() {
 		line := scanner.Text()
 
+		// jump blank line
+		if line == "" {
+			continue
+		}
+
 		count++
 		dataEntry, err := parser.ParseLine(line, count)
 		if err != nil {
