@@ -30,12 +30,13 @@ func returnProductID(p []entities.Product, name string) int64 {
 	return 0
 }
 
-// getProdProducSales returns all producers from database with ID, alll products from database with ID and content producers sales
-func getProducersProductSales(ctx context.Context, u *salesUseCase, dEntry []parser.DataEntry, cpAll []entities.Producer) (*[]entities.Producer,
+// getProdProducSales returns all producers, products  from database with ID,
+// and sales of the content producers
+func getProducersProductSales(ctx context.Context, u *salesUseCase, dEntry []parser.DataEntry, producersAll []entities.Producer) (*[]entities.Producer,
 	*[]entities.Product, *[]entities.Sale, *customerror.CustomError) {
 
 	//remove all duplicate producers
-	cp := removeDuplicate(cpAll)
+	cp := removeDuplicate(producersAll)
 
 	errorC := u.producerRepository.Add(ctx, cp)
 	if errorC != nil {
@@ -167,13 +168,12 @@ func getSalesAffiliates(ctx context.Context, u *salesUseCase, dataEntryProducers
 func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.CustomError {
 	var allLines []string
 	var dataEntryProducers []parser.DataEntry
-	var cpAll []entities.Producer
+	var producersAll []entities.Producer
 
 	file, err := os.Open(nameFile)
 	if err != nil {
 		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", err)
 	}
-	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
@@ -196,15 +196,24 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 			cp := entities.Producer{
 				Name: dataEntry.Seller,
 			}
-			cpAll = append(cpAll, cp)
+			producersAll = append(producersAll, cp)
 		}
 	}
 
-	allCP, allP, salesP, errorC := getProducersProductSales(ctx, u, dataEntryProducers, cpAll)
+	file.Close()
+	// remove file after read
+	err = os.Remove(nameFile)
+	if err != nil {
+		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", err)
+	}
+
+	// get all producers, products and sales producers
+	allCP, allP, salesP, errorC := getProducersProductSales(ctx, u, dataEntryProducers, producersAll)
 	if errorC != nil {
 		return errorC
 	}
 
+	// get affiliates sales
 	salesAff, errorC := getSalesAffiliates(ctx, u, dataEntryProducers, allLines, allCP, allP)
 	if errorC != nil {
 		return errorC
