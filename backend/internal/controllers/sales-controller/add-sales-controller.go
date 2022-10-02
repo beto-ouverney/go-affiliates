@@ -5,7 +5,8 @@ import (
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
 )
 
-// ResponseMsg is a struct that represents the response message to client
+// ResponseMsg is a struct that represents the response message to client Account model info
+// @Description ResponseMsg response json message
 type ResponseMsg struct {
 	Message string `json:"message"`
 }
