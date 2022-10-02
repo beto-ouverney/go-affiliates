@@ -29,7 +29,7 @@ func AddSalesDB(c *gin.Context) {
 
 	// Bind file
 	if err := c.ShouldBind(&bindFile); err != nil {
-		c.String(http.StatusBadRequest, fmt.Sprintf("{\"message\":\"%s\"}", err.Error()))
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Field validation for 'File' failed on the 'required' tag. File not found"})
 		return
 	}
 
