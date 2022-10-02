@@ -11,9 +11,6 @@ import (
 // Regex expression to verify if line of file is in correct format
 const pattern = "(?P<type>[1-4])(?P<date>(19[0-9][0-9]|20[0-9][0-9])-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(T)(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9]([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)))(?P<product>[A-Z -]*)(?P<value>[0-9]*)(?P<seller>[A-Z ]*)"
 
-// Regex expression to verify if date is in correct format
-const datePattern = "(19[0-9][0-9]|20[0-9][0-9])-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(T)(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9]([\\+-])([01]\\d|2[0-3]):?([0-5]\\d))"
-
 // DataEntry presents a data line in the data file
 // ID presents the line in the file
 type DataEntry struct {
@@ -41,7 +38,7 @@ func getMatchedValueByIdentifier(identifier string, matches []string, expNames [
 
 // ParseLine parser a string line and return a DataEntry struct
 func ParseLine(line string, lineNumber int) (DataEntry, error) {
-	errorLine := fmt.Sprintf("Line: %d", lineNumber)
+	errorLine := fmt.Sprintf("Line %d:", lineNumber)
 
 	re := regexp.MustCompile(pattern)
 
@@ -57,22 +54,27 @@ func ParseLine(line string, lineNumber int) (DataEntry, error) {
 	typeString := getMatchedValueByIdentifier("type", matches, expNames)
 	typeParam, _ := strconv.Atoi(typeString)
 	date := getMatchedValueByIdentifier("date", matches, expNames)
-	product := strings.TrimSpace(getMatchedValueByIdentifier("product", matches, expNames))
+	product := getMatchedValueByIdentifier("product", matches, expNames)
 	if product == "" {
 		errorLine += " Product is in incorrect format."
 		return DataEntry{}, errors.New(errorLine)
 	}
-	if len(product) > 30 {
-		errorLine += " Product is too long, must be less than 31 characters."
+	if len(product) != 30 {
+		errorLine += " Product must have length 30"
 		return DataEntry{}, errors.New(errorLine)
 	}
+	product = strings.TrimSpace(product)
 	valueString := getMatchedValueByIdentifier("value", matches, expNames)
+	if len(valueString) != 10 {
+		errorLine += "  Value must have 10 numbers."
+		return DataEntry{}, errors.New(errorLine)
+	}
 	value, err := strconv.Atoi(valueString)
 	if err != nil {
 		errorLine += " Value is in incorrect format, must be a int number."
 		return DataEntry{}, errors.New(errorLine)
 	}
-	seller := strings.TrimSpace(getMatchedValueByIdentifier("seller", matches, expNames))
+	seller := getMatchedValueByIdentifier("seller", matches, expNames)
 	if seller == "" {
 		errorLine += " Seller is in incorrect format."
 		return DataEntry{}, errors.New(errorLine)
@@ -81,32 +83,21 @@ func ParseLine(line string, lineNumber int) (DataEntry, error) {
 		errorLine += " Seller is too long, must be less than 21 characters."
 		return DataEntry{}, errors.New(errorLine)
 	}
+	seller = strings.TrimSpace(seller)
 
+	commission := 0
+	if typeParam == 4 {
+		commission = value
+		value = 0
+	}
 	return DataEntry{
-		ID:      line,
-		Type:    typeParam,
-		Date:    date,
-		Product: product,
-		Value:   value,
-		Seller:  seller,
+		ID:         line,
+		Type:       typeParam,
+		Date:       date,
+		Product:    product,
+		Commission: commission,
+		Value:      value,
+		Seller:     seller,
 	}, nil
 
-}
-
-// ParseLineNameValue parser a string line and return name product and name producer and value
-func ParseLineNameValue(line string) (nS, nP string, v int) {
-
-	re := regexp.MustCompile(pattern)
-	matches := re.FindStringSubmatch(line)
-	expNames := re.SubexpNames()
-
-	nS = strings.TrimSpace(getMatchedValueByIdentifier("seller", matches, expNames))
-
-	nP = strings.TrimSpace(getMatchedValueByIdentifier("product", matches, expNames))
-
-	vStr := getMatchedValueByIdentifier("value", matches, expNames)
-
-	v, _ = strconv.Atoi(vStr)
-
-	return
 }

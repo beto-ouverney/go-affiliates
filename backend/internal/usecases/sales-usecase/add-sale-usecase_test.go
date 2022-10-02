@@ -113,7 +113,7 @@ func Test_getProducersProductSales(t *testing.T) {
 			want2: &[]entities.Sale{
 				{
 					ID:         1,
-					ProductId:  1,
+					ProductId:  2,
 					Value:      12750,
 					Commission: 0,
 					ProducerId: 1,
@@ -225,52 +225,13 @@ func Test_getSalesAffiliates(t *testing.T) {
 	}
 }
 
-func Test_returnProducerID(t *testing.T) {
-	assertions := assert.New(t)
-
-	type args struct {
-		p    []entities.Producer
-		name string
-	}
-	tests := []struct {
-		describe string
-		args     args
-		want     int64
-		msg      string
-	}{
-		{
-			describe: "Should be able return the producer id",
-			args: args{
-				p: []entities.Producer{
-					{
-						ID:   1,
-						Name: "Producer 1",
-					},
-					{
-						ID:   2,
-						Name: "Producer 2",
-					},
-				},
-				name: "Producer 2",
-			},
-			want: 2,
-			msg:  "The producer id must be 2",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.describe, func(t *testing.T) {
-			got := returnProducerID(tt.args.p, tt.args.name)
-			assertions.Equal(tt.want, got, tt.msg)
-		})
-	}
-}
-
 func Test_returnProductID(t *testing.T) {
 	assertions := assert.New(t)
 
 	type args struct {
-		p    []entities.Product
-		name string
+		p      []entities.Product
+		name   string
+		idProd int64
 	}
 	tests := []struct {
 		describe string
@@ -293,7 +254,8 @@ func Test_returnProductID(t *testing.T) {
 						ProducerId: 3,
 					},
 				},
-				name: "Product 2",
+				name:   "Product 2",
+				idProd: 3,
 			},
 			want: 2,
 			msg:  "The product id must be 2",
@@ -301,7 +263,7 @@ func Test_returnProductID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
-			got := returnProductID(tt.args.p, tt.args.name)
+			got := returnProductID(tt.args.p, tt.args.name, tt.args.idProd)
 			assertions.Equal(tt.want, got, tt.msg)
 		})
 	}

@@ -11,29 +11,31 @@ import (
 )
 
 // returnProducerID returns the content producer ID
-func returnProducerID(p []entities.Producer, name string) int64 {
+func returnProducerID(p []entities.Producer, name string) (id int64) {
+
 	for _, v := range p {
 		if v.Name == name {
 			return v.ID
 		}
 	}
-	return 0
+	return
 }
 
-// returnProductID returns the content product ID
-func returnProductID(p []entities.Product, name string) int64 {
+// returnProductID returns the product ID
+func returnProductID(p []entities.Product, name string, idProducer int64) (id int64) {
+
 	for _, v := range p {
-		if v.Name == name {
+		if v.Name == name && v.ProducerId == idProducer {
 			return v.ID
 		}
 	}
-	return 0
+	return
 }
 
-// getProdProducSales returns all producers, products  from database with ID,
+// getProdProducSales returns all  products  from database with ID,
 // and sales of the content producers
-func getProducersProductSales(ctx context.Context, u *salesUseCase, dEntry []parser.DataEntry, producersAll []entities.Producer) (*[]entities.Producer,
-	*[]entities.Product, *[]entities.Sale, *customerror.CustomError) {
+func getProducersProductSales(ctx context.Context, u *salesUseCase, dEntry []parser.DataEntry, producersAll []entities.Producer) (*[]entities.Producer, *[]entities.Product,
+	*[]entities.Sale, *customerror.CustomError) {
 
 	//remove all duplicate producers
 	cp := removeDuplicate(producersAll)
@@ -81,57 +83,45 @@ func getProducersProductSales(ctx context.Context, u *salesUseCase, dEntry []par
 	var sales []entities.Sale
 
 	for i, d := range dEntry {
-		for _, p := range *allProducts {
-			if p.Name == d.Product {
-				dEntry[i].ProductId = p.ID
-			}
-		}
 
-		s := entities.Sale{
-			ProductId:  dEntry[i].ProductId,
-			ProducerId: dEntry[i].ProducerId,
-			Value:      dEntry[i].Value,
-			Commission: dEntry[i].Commission,
-			Date:       dEntry[i].Date,
+		if d.Type == 1 {
+			s := entities.Sale{
+				ProductId:  returnProductID(*allProducts, d.Product, d.ProducerId),
+				ProducerId: dEntry[i].ProducerId,
+				Value:      dEntry[i].Value,
+				Commission: dEntry[i].Commission,
+				Date:       dEntry[i].Date,
+			}
+			sales = append(sales, s)
 		}
-		sales = append(sales, s)
 	}
 
 	return allProducers, allProducts, &sales, nil
 }
 
 // getSalesAffiliates returns affiliates sales.
-func getSalesAffiliates(ctx context.Context, u *salesUseCase, dataEntryProducers []parser.DataEntry, allLines []string, allCP *[]entities.Producer, allP *[]entities.Product) (
+func getSalesAffiliates(ctx context.Context, u *salesUseCase, dataEntryType2, dataEntryType3 []parser.DataEntry, allCP *[]entities.Producer, allP *[]entities.Product, allAffD []entities.Affiliate, dataEntryAff []parser.DataEntry) (
 	*[]entities.Sale, *customerror.CustomError) {
-	var aff []entities.Affiliate
 
-	var dAff []parser.DataEntry
-	for _, d := range dataEntryProducers {
-		if d.Type == 2 {
-			for _, l := range allLines {
-				if l[0:1] == "4" {
-					name, value := parser.ParseLineNameValue(l)
-					idP := returnProducerID(*allCP, name)
-					d := parser.DataEntry{
-						Type:       4,
-						Seller:     name,
-						Value:      d.Value,
-						ProducerId: idP,
-						ProductId:  returnProductID(*allP, d.Product),
-						Commission: value,
-						Date:       d.Date,
-					}
-					dAff = append(dAff, d)
-					affU := entities.Affiliate{
-						Name:       name,
-						ProducerId: idP,
-					}
-					aff = append(aff, affU)
-				}
+	for i, dA := range dataEntryAff {
+		for _, dP := range dataEntryType3 {
+			if dA.Date == dP.Date {
+				id := returnProducerID(*allCP, dP.Seller)
+				idProd := returnProductID(*allP, dP.Product, id)
+				dataEntryAff[i].ProducerId = id
+				dataEntryAff[i].ProductId = idProd
+				allAffD[i].ProducerId = id
 			}
-
+		}
+		for _, dP := range dataEntryType2 {
+			if dA.Date == dP.Date {
+				dataEntryAff[i].Value = dP.Value
+			}
 		}
 	}
+
+	// remove duplicate affiliates
+	aff := removeDuplicate(allAffD)
 
 	errorC := u.affiliateRepository.Add(ctx, aff)
 	if errorC != nil {
@@ -144,7 +134,7 @@ func getSalesAffiliates(ctx context.Context, u *salesUseCase, dataEntryProducers
 	}
 
 	var salesA []entities.Sale
-	for _, d := range dAff {
+	for _, d := range dataEntryAff {
 
 		s := entities.Sale{
 			ProductId:  d.ProductId,
@@ -168,7 +158,12 @@ func getSalesAffiliates(ctx context.Context, u *salesUseCase, dataEntryProducers
 func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.CustomError {
 	var allLines []string
 	var dataEntryProducers []parser.DataEntry
+	var dataEntryType3 []parser.DataEntry
+	var dataEntryType2 []parser.DataEntry
+	var dataEntryAffiliates []parser.DataEntry
+	var dataEntryAll []parser.DataEntry
 	var producersAll []entities.Producer
+	var affiliatesAll []entities.Affiliate
 
 	file, err := os.Open(nameFile)
 	if err != nil {
@@ -182,7 +177,7 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// jump blank line
+		// jump a blank line
 		if line == "" {
 			continue
 		}
@@ -194,6 +189,7 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 		}
 
 		allLines = append(allLines, line)
+		dataEntryAll = append(dataEntryAll, dataEntry)
 
 		if line[0:1] == "1" || line[0:1] == "2" {
 
@@ -202,6 +198,17 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 				Name: dataEntry.Seller,
 			}
 			producersAll = append(producersAll, cp)
+			if line[0:1] == "2" {
+				dataEntryType2 = append(dataEntryType2, dataEntry)
+			}
+		} else if line[0:1] == "3" {
+			dataEntryType3 = append(dataEntryType3, dataEntry)
+		} else {
+			dataEntryAffiliates = append(dataEntryAffiliates, dataEntry)
+
+			affiliatesAll = append(affiliatesAll, entities.Affiliate{
+				Name: dataEntry.Seller,
+			})
 		}
 	}
 
@@ -219,7 +226,7 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 	}
 
 	// get affiliates sales
-	salesAff, errorC := getSalesAffiliates(ctx, u, dataEntryProducers, allLines, allCP, allP)
+	salesAff, errorC := getSalesAffiliates(ctx, u, dataEntryProducers, dataEntryType2, allCP, allP, affiliatesAll, dataEntryAffiliates)
 	if errorC != nil {
 		return errorC
 	}

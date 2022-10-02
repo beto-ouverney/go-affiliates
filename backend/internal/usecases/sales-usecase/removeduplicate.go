@@ -4,7 +4,7 @@ import "github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 
 // typeSet for Generics in removeDuplicates
 type typeSet interface {
-	entities.Producer | entities.Product
+	entities.Producer | entities.Product | entities.Affiliate
 }
 
 // removeDuplicate removes duplicate strings or struct from a slice
