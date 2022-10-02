@@ -3,6 +3,7 @@ package sales_usecase
 import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
+	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	affiliaterepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/affiliate-repository"
 	producerrepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/producer-repository"
 	productrepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/product-repository"
@@ -13,6 +14,7 @@ import (
 // ISalesUseCase presents the interface for the sales use case
 type ISalesUseCase interface {
 	Add(ctx context.Context, nameFile string) *customerror.CustomError
+	GetAll(ctx context.Context) (*[]entities.SaleResponse, *customerror.CustomError)
 }
 
 type salesUseCase struct {
