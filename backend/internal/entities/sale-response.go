@@ -1,6 +1,7 @@
 package entities
 
 // SaleResponse presents the response client of a sale
+// @Description the sale of the content producer/affiliate
 type SaleResponse struct {
 	Product    string `json:"product" db:"product"`
 	Producer   string `json:"producer" db:"producer"`

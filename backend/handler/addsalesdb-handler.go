@@ -16,14 +16,16 @@ type BindFile struct {
 
 // AddSalesDB is the handler for the route /addsalesdb, add sales to database
 // @Summary      Add sales to database
-// @Description  Add sales to database
+// @Description  Add sales from file to database
 // @Tags         sales, add, database
+// @Consumes     multipart/form-data
+// @Param        multipart/form-data body BindFile true "File with sales"
 // @Produce      json
-// @Success      200  {string} json "{"version":"0.0.1"}"
-// @Failure      400  {object}  httputil.HTTPError
-// @Failure      404  {object}  httputil.HTTPError
-// @Failure      500  {object}  httputil.HTTPError
-// @Router / [post]
+// @Success      200  {object}  salescontroller.ResponseMsg
+// @Failure      400  {object}  salescontroller.ResponseMsg
+// @Failure      404  {object}  salescontroller.ResponseMsg
+// @Failure      500  {object}  salescontroller.ResponseMsg
+// @Router /sales/upload [post]
 func AddSalesDB(c *gin.Context) {
 	var bindFile BindFile
 
