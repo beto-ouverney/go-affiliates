@@ -119,7 +119,8 @@ func TestGetEmptyArrayIfNotHaveSales(t *testing.T) {
 	//Verify if the database is in the test environment
 	if strings.Contains(os.Getenv("POSTGRES_DB"), "test") {
 		initDBTest(t)
-		defer dropDBTest(t)
+		// when the test is finished, recreate db
+		defer initDBTest(t)
 	} else {
 		t.Skip("Skipping test because it is not a test environment, the port number is not 6306")
 	}
