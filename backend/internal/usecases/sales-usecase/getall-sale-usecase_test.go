@@ -6,6 +6,7 @@ import (
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/usecases/sales-usecase/mocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
@@ -59,7 +60,7 @@ func Test_salesUseCase_GetAll(t *testing.T) {
 		t.Run(tt.describe, func(t *testing.T) {
 			ctx := context.Background()
 			m := new(mocks.ISalesUseCase)
-			m.On("GetAll", ctx).Return(tt.want, tt.want1)
+			m.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(tt.want, tt.want1)
 
 			got, got1 := m.GetAll(ctx)
 			assertions.EqualValues(tt.want, got)
