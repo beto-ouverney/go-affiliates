@@ -213,11 +213,6 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 	}
 
 	file.Close()
-	// remove file after read
-	err = os.Remove(nameFile)
-	if err != nil {
-		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", err)
-	}
 
 	// get all producers, products and sales producers
 	allCP, allP, salesP, errorC := getProducersProductSales(ctx, u, dataEntryProducers, producersAll)
