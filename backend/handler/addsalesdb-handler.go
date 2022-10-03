@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -52,10 +53,14 @@ func AddSalesDB(c *gin.Context) {
 	t := time.Now()
 	d := fmt.Sprintf("%s%s-%s", config.PATHFILE, file.Filename, t)
 
+	// Save file in temporary directory
 	if err := c.SaveUploadedFile(file, d); err != nil {
 		c.String(http.StatusBadRequest, fmt.Sprintf(`{"message":"%s"}`, err.Error()))
 		return
 	}
+
+	// Remove file with sales
+	defer os.Remove(d)
 
 	// access sales controller
 	ctl := salescontroller.New(conn)
