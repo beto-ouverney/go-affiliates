@@ -269,6 +269,38 @@ func TestAddSalesDB(t *testing.T) {
 			wantDBProducts:       nil,
 			wantDBSaleProducer:   nil,
 			wantDBSalesAffiliate: nil,
+		}, {
+			describe: "Should not be able add the data to the database if product have just spaces",
+			args: []string{
+				"22022-01-16T14:13:54-03:00                              0000012750THIAGO OLIVEIRA",
+			},
+			expectedStatus: 400,
+			expectedBody: salescontroller.ResponseMsg{
+				Message: "Line 1: Product is in incorrect format.",
+			},
+			msgStatus:            "The status code must be 400",
+			msgBody:              "The body must be a failure message",
+			wantDBProducer:       nil,
+			wantDBAffiliate:      nil,
+			wantDBProducts:       nil,
+			wantDBSaleProducer:   nil,
+			wantDBSalesAffiliate: nil,
+		}, {
+			describe: "Should not be able add the data to the database if name have just spaces",
+			args: []string{
+				"32022-01-16T14:13:54-03:00CURSO DE BEM-ESTAR            0000004500            ",
+			},
+			expectedStatus: 400,
+			expectedBody: salescontroller.ResponseMsg{
+				Message: "Line 1: Seller is in incorrect format.",
+			},
+			msgStatus:            "The status code must be 400",
+			msgBody:              "The body must be a failure message",
+			wantDBProducer:       nil,
+			wantDBAffiliate:      nil,
+			wantDBProducts:       nil,
+			wantDBSaleProducer:   nil,
+			wantDBSalesAffiliate: nil,
 		},
 	}
 	for _, tt := range tests {
