@@ -154,6 +154,12 @@ make test
 - To See the swagger documentation:
 * use endpoint /api/v1/swagger/index.html
 
+- To see all commands:
+
+```bash
+make help
+```
+
 ## Author
 
 - LinkedIn - [Alberto Ouverney Paz](https://www.linkedin.com/in/beto-ouverney-paz/)
