@@ -112,11 +112,22 @@ relational database. In this case is PostgreSQL.
 ```
 ## The development process
 
+In the product and affiliates table I chose to put only their names and the producer id, because those are the only ones, 
+together with date, that are immutable over time, as there could be an equal product from the same producer, 
+but with different values, the same goes for the affiliate. An affiliate could have different comissions over time, 
+if the file sent were the entire existing database, there would be the possibility of changing the values of comissions 
+and the value of the product.
+
+
+## In portuguese:
+
 Optei colocar nas tabelas product e affiliates somente os nomes dos mesmos e o id do producer porque são
 os únicos juntos com o date que sao imutaveis ao longo do tempo, pois poderia ter um mesmo produto de um producer com 
 diferente values, o mesmo vale para o affiliate. Um affiliate poderia ter uma comissoes diferentes
 ao longo do tempo caso o arquivo enviado fosse toda a base de dados existente grande seria a possibilidade de 
 ter alteração de valores de comissão e o valor do produto.
+
+
 
 ### Tools Used
 
