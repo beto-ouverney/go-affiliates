@@ -126,6 +126,12 @@ make back-container
 make run
 ```
 
+Then install frontend dependences:
+
+```bash
+make npm
+```
+
 Then you need to run front end, in the root of the project run the command below:
 
 ```bash
