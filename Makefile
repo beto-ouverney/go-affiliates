@@ -22,7 +22,8 @@ help:
 	$(info -> run-front               runs frontend application)
 	$(info -> backcontainer-test      access backend container test bash)
 	$(info -> backcontainer           access backend container bash)
-	$(info -> frontcontainer          access front container bash)
+	$(info -> frontcontainer          access front container sh)
+	$(info -> npm                     to install npm dependencies)
 
 docker-test-up:
 	docker-compose -f ${DOCKER_COMPOSE_TEST} up -d --build
