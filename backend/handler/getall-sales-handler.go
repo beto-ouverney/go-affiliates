@@ -2,6 +2,7 @@ package handler
 
 import (
 	salescontroller "github.com/beto-ouverney/go-affiliates/backend/internal/controllers/sales-controller"
+	"github.com/beto-ouverney/go-affiliates/backend/internal/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,10 +16,12 @@ import (
 // @Failure      500  {object}  salescontroller.ResponseMsg
 // @Router /sales [get]
 func GetAllSales(c *gin.Context) {
+	conn := db.ConnectDB()
+	defer conn.Close()
 
-	ctl := salescontroller.New()
+	ctl := salescontroller.New(conn)
 
-	res, err := ctl.GetAll(c)
+	res, err := ctl.GetAll(c.Request.Context())
 	if err != nil {
 		r, status := errorHandler(err)
 		c.String(status, r)

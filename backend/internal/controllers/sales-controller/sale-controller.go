@@ -5,6 +5,7 @@ import (
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	salesusecase "github.com/beto-ouverney/go-affiliates/backend/internal/usecases/sales-usecase"
+	"github.com/jmoiron/sqlx"
 )
 
 // ISaleController presents the interface for the sale controller
@@ -18,8 +19,8 @@ type saleController struct {
 }
 
 // New creates a new sale controller
-func New() ISaleController {
+func New(db *sqlx.DB) ISaleController {
 	return &saleController{
-		salesusecase.New(),
+		salesusecase.New(db),
 	}
 }

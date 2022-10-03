@@ -9,6 +9,7 @@ import (
 	productrepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/product-repository"
 	saleaffiliaterepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/sale-affiliate-repository"
 	salerepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/sale-producers-repository"
+	"github.com/jmoiron/sqlx"
 )
 
 // ISalesUseCase presents the interface for the sales use case
@@ -26,12 +27,12 @@ type salesUseCase struct {
 }
 
 // New creates a new sales use case
-func New() ISalesUseCase {
+func New(db *sqlx.DB) ISalesUseCase {
 	return &salesUseCase{
-		salerepository.New(),
-		saleaffiliaterepository.New(),
-		producerrepository.New(),
-		productrepository.New(),
-		affiliaterepository.New(),
+		salerepository.New(db),
+		saleaffiliaterepository.New(db),
+		producerrepository.New(db),
+		productrepository.New(db),
+		affiliaterepository.New(db),
 	}
 }

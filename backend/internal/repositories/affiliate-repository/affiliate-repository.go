@@ -3,7 +3,6 @@ package affiliate_repository
 import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
-	"github.com/beto-ouverney/go-affiliates/backend/internal/db"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"github.com/jmoiron/sqlx"
 )
@@ -19,8 +18,8 @@ type affiliateRepository struct {
 }
 
 // New creates a new affiliate repository
-func New() IAffiliateRepository {
+func New(db *sqlx.DB) IAffiliateRepository {
 	return &affiliateRepository{
-		db.ConnectDB(),
+		db,
 	}
 }

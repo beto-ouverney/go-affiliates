@@ -3,7 +3,6 @@ package product_repository
 import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
-	"github.com/beto-ouverney/go-affiliates/backend/internal/db"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"github.com/jmoiron/sqlx"
 )
@@ -19,8 +18,8 @@ type productRepository struct {
 }
 
 // New creates a new product repository
-func New() IProductRepository {
+func New(db *sqlx.DB) IProductRepository {
 	return &productRepository{
-		db.ConnectDB(),
+		db,
 	}
 }

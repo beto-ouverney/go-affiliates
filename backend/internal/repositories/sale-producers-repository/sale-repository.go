@@ -3,7 +3,6 @@ package sale_producers_repository
 import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
-	"github.com/beto-ouverney/go-affiliates/backend/internal/db"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"github.com/jmoiron/sqlx"
 )
@@ -19,8 +18,8 @@ type saleRepository struct {
 }
 
 // New creates a new sales repository
-func New() ISaleRepository {
+func New(db *sqlx.DB) ISaleRepository {
 	return &saleRepository{
-		db.ConnectDB(),
+		db,
 	}
 }

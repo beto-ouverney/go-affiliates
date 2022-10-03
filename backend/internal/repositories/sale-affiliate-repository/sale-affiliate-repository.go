@@ -3,7 +3,6 @@ package sale_affiliate_repository
 import (
 	"context"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
-	"github.com/beto-ouverney/go-affiliates/backend/internal/db"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"github.com/jmoiron/sqlx"
 )
@@ -19,8 +18,8 @@ type saleAffiliateRepository struct {
 }
 
 // New creates a new sales repository
-func New() ISaleAffiliateRepository {
+func New(db *sqlx.DB) ISaleAffiliateRepository {
 	return &saleAffiliateRepository{
-		db.ConnectDB(),
+		db,
 	}
 }

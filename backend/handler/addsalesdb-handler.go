@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/beto-ouverney/go-affiliates/backend/config"
 	salescontroller "github.com/beto-ouverney/go-affiliates/backend/internal/controllers/sales-controller"
+	"github.com/beto-ouverney/go-affiliates/backend/internal/db"
 	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"net/http"
+	"time"
 )
 
 // BindFile is a struct for binding file
@@ -43,8 +45,12 @@ func AddSalesDB(c *gin.Context) {
 		return
 	}
 
+	conn := db.ConnectDB()
+	defer conn.Close()
+
 	// Get file path
-	d := fmt.Sprintf("%s%s", config.PATHFILE, file.Filename)
+	t := time.Now()
+	d := fmt.Sprintf("%s%s-%s", config.PATHFILE, file.Filename, t)
 
 	if err := c.SaveUploadedFile(file, d); err != nil {
 		c.String(http.StatusBadRequest, fmt.Sprintf(`{"message":"%s"}`, err.Error()))
@@ -52,8 +58,8 @@ func AddSalesDB(c *gin.Context) {
 	}
 
 	// access sales controller
-	ctl := salescontroller.New()
-	res, err := ctl.Add(c, d)
+	ctl := salescontroller.New(conn)
+	res, err := ctl.Add(c.Request.Context(), d)
 
 	if err != nil {
 		r, status := errorHandler(err)
