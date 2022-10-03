@@ -55,15 +55,15 @@ func ParseLine(line string, lineNumber int) (DataEntry, error) {
 	typeParam, _ := strconv.Atoi(typeString)
 	date := getMatchedValueByIdentifier("date", matches, expNames)
 	product := getMatchedValueByIdentifier("product", matches, expNames)
-	if product == "" {
-		errorLine += " Product is in incorrect format."
-		return DataEntry{}, errors.New(errorLine)
-	}
 	if len(product) != 30 {
 		errorLine += " Product must have length 30"
 		return DataEntry{}, errors.New(errorLine)
 	}
 	product = strings.TrimSpace(product)
+	if product == "" {
+		errorLine += " Product is in incorrect format."
+		return DataEntry{}, errors.New(errorLine)
+	}
 	valueString := getMatchedValueByIdentifier("value", matches, expNames)
 	if len(valueString) != 10 {
 		errorLine += "  Value must have 10 numbers."
@@ -75,16 +75,15 @@ func ParseLine(line string, lineNumber int) (DataEntry, error) {
 		return DataEntry{}, errors.New(errorLine)
 	}
 	seller := getMatchedValueByIdentifier("seller", matches, expNames)
-	if seller == "" {
-		errorLine += " Seller is in incorrect format."
-		return DataEntry{}, errors.New(errorLine)
-	}
 	if len(seller) > 20 {
 		errorLine += " Seller is too long, must be less than 21 characters."
 		return DataEntry{}, errors.New(errorLine)
 	}
 	seller = strings.TrimSpace(seller)
-
+	if seller == "" {
+		errorLine += " Seller is in incorrect format."
+		return DataEntry{}, errors.New(errorLine)
+	}
 	commission := 0
 	if typeParam == 4 {
 		commission = value
