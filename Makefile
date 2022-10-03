@@ -50,6 +50,10 @@ run-back:
 	echo "Running application... waiting a message:  Server running on port..."
 	cd ${BACKEND} && go run server.go
 
+npm:
+	echo "Install dependences frontend application..."
+	cd ${FRONTEND} && npm install
+
 run-front:
 	echo "Running application frontend application..."
 	cd ${FRONTEND} && npm run serve
