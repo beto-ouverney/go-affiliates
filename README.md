@@ -79,6 +79,11 @@ ter alteração de valores de comissão e o valor do produto.
   git@github.com:beto-ouverney/go-affiliates.git
 ```
 
+- Access the folder
+```bash
+  cd go-affiliates
+```
+
 - Use the command below to up the Project containers in test mode
 ```bash
 make docker-test-up
