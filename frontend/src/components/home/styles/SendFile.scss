@@ -1,0 +1,33 @@
+.container {
+  width: 50%;
+  display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+ .btn-send{
+    width: 20%;
+    height: 30px;
+    background-color: #000000;
+    color: #ffffff;
+    font-size:18px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  input{
+    height: 30px;
+    background-color: #ffffff;
+    color: #000000;
+    font-size:18px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+}
