@@ -20,9 +20,9 @@ help:
 	$(info -> back-test               runs backend tests)
 	$(info -> run-back                runs backend application)
 	$(info -> run-front               runs frontend application)
-	$(info -> backcontainer-test      access backend container test bash)
-	$(info -> backcontainer           access backend container bash)
-	$(info -> frontcontainer          access front container sh)
+	$(info -> back-container-test     access backend container test bash)
+	$(info -> back-container          access backend container bash)
+	$(info -> front-container-test    access front container bash)
 	$(info -> npm                     to install npm dependencies)
 
 docker-test-up:
@@ -42,6 +42,9 @@ back-container-test:
 
 back-container:
 	docker exec -it ${BACKEND} bash
+
+front-container-test:
+	docker exec -it ${CONTAINER_FRONT_TEST} sh
 
 back-test:
 	echo "Running backend tests... Remender, to run all tests the docker-test must be running"
