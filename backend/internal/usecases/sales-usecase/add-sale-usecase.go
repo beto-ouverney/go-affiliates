@@ -229,18 +229,25 @@ func (u *salesUseCase) Add(ctx context.Context, nameFile string) *customerror.Cu
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	//write sales of producers in database
+	var error1, error2 *customerror.CustomError
+	go func() {
+		error1 = writerDBProducers(ctx, u, *salesP, &wg)
 
-	errorC = writerDBProducers(ctx, u, *salesP, &wg)
-	if errorC != nil {
-		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", errorC)
-	}
+	}()
 
+	go func() {
+		error2 = writerDBAffiliates(ctx, u, *salesAff, &wg)
+	}()
 	//write sales of affiliates in database
-	errorC = writerDBAffiliates(ctx, u, *salesAff, &wg)
-	if errorC != nil {
-		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", errorC)
-	}
 	wg.Wait()
+
+	if error1 != nil {
+		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", error1)
+	}
+
+	if error2 != nil {
+		return customerror.NewError(customerror.EINVALID, "Error", "sales_usecase.AddSale", error2)
+	}
 
 	return nil
 }
