@@ -1,12 +1,11 @@
-package tests
+package sales_controller
 
 import (
 	"context"
 	"fmt"
 	"github.com/beto-ouverney/go-affiliates/backend/config"
-	salescontroller "github.com/beto-ouverney/go-affiliates/backend/internal/controllers/sales-controller"
-	"github.com/beto-ouverney/go-affiliates/backend/internal/controllers/sales-controller/mocks"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
+	"github.com/beto-ouverney/go-affiliates/backend/internal/usecases/sales-usecase/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -21,7 +20,7 @@ func Test_saleController_Add(t *testing.T) {
 	tests := []struct {
 		describe string
 		args     args
-		want     *salescontroller.ResponseMsg
+		want     *ResponseMsg
 		want1    *customerror.CustomError
 	}{
 		{
@@ -29,7 +28,7 @@ func Test_saleController_Add(t *testing.T) {
 			args: args{
 				nameFile: "test.txt",
 			},
-			want:  &salescontroller.ResponseMsg{Message: "Sales added successfully"},
+			want:  &ResponseMsg{Message: "Sales added successfully"},
 			want1: nil,
 		},
 	}
@@ -37,10 +36,13 @@ func Test_saleController_Add(t *testing.T) {
 		t.Run(tt.describe, func(t *testing.T) {
 			d := fmt.Sprintf("%s%s", config.PATHFILE, tt.args.nameFile)
 			ctx := context.Background()
-			m := new(mocks.ISaleController)
-			m.On("Add", mock.AnythingOfType("*context.emptyCtx"), d).Return(tt.want, tt.want1)
 
-			got, got1 := m.Add(ctx, d)
+			m := new(mocks.ISalesUseCase)
+
+			m.On("Add", mock.AnythingOfType("*context.emptyCtx"), d).Return(tt.want1)
+
+			c := saleController{m}
+			got, got1 := c.Add(ctx, d)
 
 			assertions.Equal(tt.want, got)
 			assertions.Equal(tt.want1, got1)

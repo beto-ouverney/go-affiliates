@@ -1,10 +1,10 @@
-package tests
+package sales_controller
 
 import (
 	"context"
-	"github.com/beto-ouverney/go-affiliates/backend/internal/controllers/sales-controller/mocks"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
+	"github.com/beto-ouverney/go-affiliates/backend/internal/usecases/sales-usecase/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -61,10 +61,11 @@ func Test_saleController_GetAll(t *testing.T) {
 		t.Run(tt.describe, func(t *testing.T) {
 			ctx := context.Background()
 
-			m := new(mocks.ISaleController)
+			m := new(mocks.ISalesUseCase)
 			m.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(tt.want, tt.want1)
 
-			got, got1 := m.GetAll(ctx)
+			s := saleController{m}
+			got, got1 := s.GetAll(ctx)
 			assertions.EqualValues(tt.want, got)
 			assertions.Equal(tt.want1, got1)
 		})
