@@ -2,6 +2,7 @@ package sales_usecase
 
 import (
 	"context"
+	"fmt"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/customerror"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/entities"
 	"github.com/beto-ouverney/go-affiliates/backend/internal/pkg/parser"
@@ -10,9 +11,10 @@ import (
 	mocksproductrepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/product-repository/mocks"
 	mockssaleaffiliaterepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/sale-affiliate-repository/mocks"
 	mockssalerepository "github.com/beto-ouverney/go-affiliates/backend/internal/repositories/sale-producers-repository/mocks"
-	mockssalesusecase "github.com/beto-ouverney/go-affiliates/backend/internal/usecases/sales-usecase/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"log"
+	"os"
 	"sync"
 	"testing"
 )
@@ -24,6 +26,7 @@ func Test_getProducersProductSales(t *testing.T) {
 	sRepo := new(mockssaleaffiliaterepository.ISaleAffiliateRepository)
 
 	pRepo := new(mocksproducerrepository.IProducerRepository)
+
 	prodRepo := new(mocksproductrepository.IProductRepository)
 	affRepo := new(mocksaffiliaterepository.IAffiliateRepository)
 
@@ -33,7 +36,7 @@ func Test_getProducersProductSales(t *testing.T) {
 		dEntry   []parser.DataEntry
 		allLines []string
 		cpAll    []entities.Producer
-		allP     *[]entities.Product
+		allP     []entities.Product
 	}
 
 	tests := []struct {
@@ -49,7 +52,11 @@ func Test_getProducersProductSales(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				u: &salesUseCase{
-					mRepo, sRepo, pRepo, prodRepo, affRepo,
+					mRepo,
+					sRepo,
+					pRepo,
+					prodRepo,
+					affRepo,
 				},
 				dEntry: []parser.DataEntry{
 					{
@@ -79,7 +86,7 @@ func Test_getProducersProductSales(t *testing.T) {
 						Name: "THIAGO OLIVEIRA",
 					},
 				},
-				allP: &[]entities.Product{
+				allP: []entities.Product{
 					{
 						ID:   1,
 						Name: "CURSO DE BEM-ESTAR",
@@ -112,8 +119,8 @@ func Test_getProducersProductSales(t *testing.T) {
 			},
 			want2: &[]entities.Sale{
 				{
-					ID:         1,
-					ProductId:  2,
+					ID:         0,
+					ProductId:  0,
 					Value:      12750,
 					Commission: 0,
 					ProducerId: 1,
@@ -125,11 +132,14 @@ func Test_getProducersProductSales(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
+			pRepo.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(&tt.args.cpAll, nil)
+			prodRepo.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(&tt.args.allP, nil)
+			pRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"), tt.args.cpAll).Return(nil)
+			prodRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"),
+				[]entities.Product{entities.Product{ID: 0, Name: "CURSO DE BEM-ESTAR", ProducerId: 1}}).Return(nil)
 
-			m := new(IFunctionsMock)
-			m.On("getProducersProductSales", mock.AnythingOfType("*context.emptyCtx"), tt.args.u, tt.args.dEntry, tt.args.cpAll).Return(tt.want, tt.want1, tt.want2, tt.want3)
+			got, got1, got2, got3 := getProducersProductSales(tt.args.ctx, tt.args.u, tt.args.dEntry, tt.args.cpAll)
 
-			got, got1, got2, got3 := m.getProducersProductSales(tt.args.ctx, tt.args.u, tt.args.dEntry, tt.args.cpAll)
 			assertions.Equal(got, tt.want)
 			assertions.Equal(got1, tt.want1)
 			assertions.Equal(got2, tt.want2)
@@ -272,31 +282,126 @@ func Test_returnProductID(t *testing.T) {
 func Test_salesUseCase_Add(t *testing.T) {
 	assertions := assert.New(t)
 
-	type args struct {
-		nameFile string
+	mockAffRepo := new(mocksaffiliaterepository.IAffiliateRepository)
+	mockProducerRepo := new(mocksproducerrepository.IProducerRepository)
+	mockProductRepo := new(mocksproductrepository.IProductRepository)
+	mockSaleRepo := new(mockssalerepository.ISaleRepository)
+	mockSaleAffRepo := new(mockssaleaffiliaterepository.ISaleAffiliateRepository)
+
+	mockSaleProducer := []entities.Sale{
+		entities.Sale{
+			ID:          0,
+			ProducerId:  1,
+			AffiliateId: 0,
+			ProductId:   0,
+			Value:       12750,
+			Commission:  0,
+			Date:        "2022-01-15T19:20:30-03:00"},
 	}
+
+	mockSaleAff := []entities.Sale{
+		entities.Sale{
+			ID:          0,
+			ProducerId:  2,
+			AffiliateId: 0,
+			ProductId:   0,
+			Value:       12750,
+			Commission:  4500,
+			Date:        "2022-01-16T14:13:54-03:00",
+		},
+	}
+
+	mockAffiliate := []entities.Affiliate{
+		entities.Affiliate{
+			ID:         0,
+			Name:       "JOSE CARLOS",
+			ProducerId: 2,
+		},
+	}
+
+	mockProducers := []entities.Producer{
+		{
+			ID:   1,
+			Name: "JOSE CARLOS",
+		},
+		{
+			ID:   2,
+			Name: "THIAGO OLIVEIRA",
+		},
+	}
+	mockProducts := []entities.Product{
+		{
+			ID:   1,
+			Name: "CURSO DE BEM-ESTAR",
+		},
+		{
+			ID:   2,
+			Name: "CURSO DE BEM-ESTAR",
+		},
+	}
+
 	tests := []struct {
 		describe string
-		args     args
+		args     []string
 		want     *customerror.CustomError
 		msg      string
 	}{
 		{
 			describe: "Shoulbe be able to add sales and return nil error",
-			args: args{
-				nameFile: "test1.txt",
+			args: []string{
+				"12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS",
+				"22022-01-16T14:13:54-03:00CURSO DE BEM-ESTAR            0000012750THIAGO OLIVEIRA",
+				"32022-01-16T14:13:54-03:00CURSO DE BEM-ESTAR            0000004500THIAGO OLIVEIRA",
+				"42022-01-16T14:13:54-03:00CURSO DE BEM-ESTAR            0000004500JOSE CARLOS",
 			},
 			want: nil,
 			msg:  "Must be nil",
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
 			ctx := context.Background()
-			m := new(mockssalesusecase.ISalesUseCase)
-			m.On("Add", mock.AnythingOfType("*context.emptyCtx"), tt.args.nameFile).Return(tt.want)
 
-			got := m.Add(ctx, tt.args.nameFile)
+			file, err := os.Create("test.txt")
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			for _, a := range tt.args {
+				l := fmt.Sprintf("%s%s", a, "\n")
+				_, errW := file.WriteString(l)
+				if errW != nil {
+					t.Fatal(errW)
+				}
+			}
+			file.Close()
+
+			// remove test file
+			defer os.Remove("test.txt")
+
+			mockProducerRepo.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(&mockProducers, nil)
+			mockProductRepo.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(&mockProducts, nil)
+			mockAffRepo.On("GetAll", mock.AnythingOfType("*context.emptyCtx")).Return(&mockAffiliate, nil)
+			mockSaleRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"), mockSaleProducer).Return(nil)
+			mockSaleAffRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"), mockSaleAff).Return(nil)
+
+			mockProducerRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"),
+				[]entities.Producer{entities.Producer{ID: 0, Name: "JOSE CARLOS"}, entities.Producer{ID: 0, Name: "THIAGO OLIVEIRA"}}).Return(nil)
+
+			mockProductRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"),
+				[]entities.Product{entities.Product{ID: 0, Name: "CURSO DE BEM-ESTAR", ProducerId: 1},
+					entities.Product{ID: 0, Name: "CURSO DE BEM-ESTAR", ProducerId: 2}}).Return(nil)
+
+			mockAffRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"),
+				[]entities.Affiliate{entities.Affiliate{ID: 0, Name: "JOSE CARLOS", ProducerId: 2}}).Return(nil)
+
+			s := salesUseCase{saleRepository: mockSaleRepo, affiliateRepository: mockAffRepo,
+				producerRepository: mockProducerRepo, productRepository: mockProductRepo,
+				saleAffiliateRepository: mockSaleAffRepo}
+
+			got := s.Add(ctx, "test.txt")
 			assertions.Equal(tt.want, got, tt.msg)
 		})
 	}
@@ -348,11 +453,9 @@ func Test_writerDBAffiliates(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
 
-			m := new(IFunctionsMock)
-			m.On("writerDBAffiliates", mock.AnythingOfType("*context.emptyCtx"), tt.args.u, tt.args.sales,
-				tt.args.wg).Return(tt.want)
-
-			got := m.writerDBAffiliates(tt.args.ctx, tt.args.u, tt.args.sales, tt.args.wg)
+			sRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"), tt.args.sales).Return(nil)
+			tt.args.wg.Add(1)
+			got := writerDBAffiliates(tt.args.ctx, tt.args.u, tt.args.sales, tt.args.wg)
 			assertions.Equal(tt.want, got, tt.msg)
 		})
 	}
@@ -402,11 +505,9 @@ func Test_writerDBProducers(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.describe, func(t *testing.T) {
 
-			m := new(IFunctionsMock)
-			m.On("writerDBProducers", mock.AnythingOfType("*context.emptyCtx"), tt.args.u, tt.args.sales,
-				tt.args.wg).Return(tt.want)
-
-			got := m.writerDBProducers(tt.args.ctx, tt.args.u, tt.args.sales, tt.args.wg)
+			mRepo.On("Add", mock.AnythingOfType("*context.emptyCtx"), tt.args.sales).Return(nil)
+			tt.args.wg.Add(1)
+			got := writerDBProducers(tt.args.ctx, tt.args.u, tt.args.sales, tt.args.wg)
 			assertions.Equal(tt.want, got, tt.msg)
 		})
 	}
